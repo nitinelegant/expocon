@@ -17,8 +17,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { useEffect, useRef } from "react";
 
 const AddVenue = () => {
+  const firstInputRef = useRef<HTMLButtonElement>(null);
   // const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
@@ -60,6 +62,12 @@ const AddVenue = () => {
     },
   });
 
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
+
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
     formik.setFieldValue("logo", file);
@@ -100,6 +108,7 @@ const AddVenue = () => {
                   Venue Name*
                 </Label>
                 <Input
+                  ref={firstInputRef}
                   id="companyName"
                   {...formik.getFieldProps("companyName")}
                   tabIndex={1}

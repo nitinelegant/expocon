@@ -17,8 +17,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { useEffect, useRef } from "react";
 
 const AddVenue = () => {
+  const firstInputRef = useRef<HTMLButtonElement>(null);
   // const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
@@ -60,9 +62,26 @@ const AddVenue = () => {
     },
   });
 
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
+
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
     formik.setFieldValue("logo", file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleUploadLayout = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    formik.setFieldValue("layout", file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -89,8 +108,10 @@ const AddVenue = () => {
                   Venue Name*
                 </Label>
                 <Input
+                  ref={firstInputRef}
                   id="companyName"
                   {...formik.getFieldProps("companyName")}
+                  tabIndex={1}
                   className={
                     formik.touched.companyName && formik.errors.companyName
                       ? "border-red-500"
@@ -111,6 +132,7 @@ const AddVenue = () => {
                 <Input
                   id="city"
                   {...formik.getFieldProps("city")}
+                  tabIndex={2}
                   className={
                     formik.touched.city && formik.errors.city
                       ? "border-red-500"
@@ -133,6 +155,8 @@ const AddVenue = () => {
                   defaultValue={formik.values.state}
                 >
                   <SelectTrigger
+                    tabIndex={3}
+                    aria-required="true"
                     className={
                       formik.touched.state && formik.errors.state
                         ? "border-red-500 text-black"
@@ -165,6 +189,7 @@ const AddVenue = () => {
                   id="phone"
                   type="tel"
                   {...formik.getFieldProps("phone")}
+                  tabIndex={4}
                   className={
                     formik.touched.phone && formik.errors.phone
                       ? "border-red-500"
@@ -184,6 +209,7 @@ const AddVenue = () => {
               <Textarea
                 id="address"
                 {...formik.getFieldProps("address")}
+                tabIndex={5}
                 className={
                   formik.touched.address && formik.errors.address
                     ? "border-red-500 text-black"
@@ -204,6 +230,7 @@ const AddVenue = () => {
                   id="website"
                   type="url"
                   {...formik.getFieldProps("website")}
+                  tabIndex={6}
                   className={
                     formik.touched.website && formik.errors.website
                       ? "border-red-500"
@@ -225,6 +252,7 @@ const AddVenue = () => {
                   id="googleMapLink"
                   type="url"
                   {...formik.getFieldProps("googleMapLink")}
+                  tabIndex={7}
                   className={
                     formik.touched.googleMapLink && formik.errors.googleMapLink
                       ? "border-red-500"
@@ -248,35 +276,29 @@ const AddVenue = () => {
                   name="logo"
                   type="file"
                   onChange={handleLogoChange}
+                  tabIndex={8}
                   className={
                     formik.touched.logo && formik.errors.logo
                       ? "border-red-500"
                       : ""
                   }
-                  // className="cursor-pointer bg-white text-black"
                   accept="image/*"
                 />
-                {/* {logoPreview && (
-                  <img
-                    src={logoPreview}
-                    alt="Logo Preview"
-                    className="mt-2 h-20 w-auto rounded-md"
-                  />
-                )} */}
                 {formik.touched.logo && formik.errors.logo && (
                   <p className="text-sm text-red-600">{formik.errors.logo}</p>
                 )}
               </div>
 
               <div className="space-y-2 text-black">
-                <Label htmlFor="logo" className="text-gray-900">
+                <Label htmlFor="layout" className="text-gray-900">
                   Upload Venue Layout
                 </Label>
                 <Input
                   id="layout"
                   name="layout"
                   type="file"
-                  onChange={handleLogoChange}
+                  onChange={handleUploadLayout}
+                  tabIndex={9}
                   className="cursor-pointer bg-white text-black"
                   accept="image/*"
                 />
@@ -293,13 +315,14 @@ const AddVenue = () => {
                 onCheckedChange={(checked) =>
                   formik.setFieldValue("featured", checked)
                 }
+                tabIndex={10}
               />
               <Label htmlFor="featured" className="text-gray-900">
                 Featured*
               </Label>
             </div>
 
-            <Button type="submit" className="w-full bg-primary">
+            <Button type="submit" className="w-full bg-primary" tabIndex={11}>
               Submit
             </Button>
           </form>

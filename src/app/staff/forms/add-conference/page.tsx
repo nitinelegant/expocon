@@ -20,17 +20,15 @@ import {
   statesAndUnionTerritories,
   years,
 } from "@/constants/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Clock } from "lucide-react";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
+import { useEffect, useRef } from "react";
+import TimeSelector from "@/components/TimeSelector";
 
 const AddEvent = () => {
+  const firstInputRef = useRef<HTMLButtonElement>(null);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   // const [logoPreview, setLogoPreview] = useState(null);
@@ -157,6 +155,11 @@ const AddEvent = () => {
       console.log(values);
     },
   });
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
 
   // const handleLogoChange = (event) => {
   //   const file = event.currentTarget.files?.[0];
@@ -204,6 +207,9 @@ const AddEvent = () => {
                   }
                 >
                   <SelectTrigger
+                    tabIndex={1}
+                    ref={firstInputRef}
+                    id="eventType"
                     className={
                       formik.touched.eventType && formik.errors.eventType
                         ? "border-red-500 text-black"
@@ -238,6 +244,7 @@ const AddEvent = () => {
                 <Label htmlFor="eventFullName">Event Full Name*</Label>
                 <Input
                   id="eventFullName"
+                  tabIndex={2}
                   {...formik.getFieldProps("eventFullName")}
                   className={
                     formik.touched.eventFullName && formik.errors.eventFullName
@@ -256,6 +263,7 @@ const AddEvent = () => {
                 <Label htmlFor="eventFullName">Event Short Name*</Label>
                 <Input
                   id="eventShortName"
+                  tabIndex={3}
                   {...formik.getFieldProps("eventShortName")}
                   className={
                     formik.touched.eventShortName &&
@@ -282,6 +290,7 @@ const AddEvent = () => {
                   }}
                 >
                   <SelectTrigger
+                    tabIndex={4}
                     className={cn(
                       "text-black",
                       formik.touched.year &&
@@ -317,6 +326,7 @@ const AddEvent = () => {
                   }}
                 >
                   <SelectTrigger
+                    tabIndex={5}
                     className={cn(
                       "text-black",
                       formik.touched.month &&
@@ -353,6 +363,7 @@ const AddEvent = () => {
                 <Input
                   type="date"
                   id="startDate"
+                  tabIndex={6}
                   {...formik.getFieldProps("startDate")}
                   className={cn(
                     formik.touched.startDate &&
@@ -384,6 +395,7 @@ const AddEvent = () => {
                 <Input
                   type="date"
                   id="endDate"
+                  tabIndex={7}
                   {...formik.getFieldProps("endDate")}
                   className={cn(
                     formik.touched.endDate &&
@@ -409,55 +421,14 @@ const AddEvent = () => {
                   </p>
                 )}
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="time">Timings</Label>
-                <Popover>
-                  <PopoverTrigger asChild className="bg-white text-black">
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal text-black",
-                        !formik.values.timings && "text-black",
-                        formik.touched.timings &&
-                          formik.errors.timings &&
-                          "border-red-500"
-                      )}
-                    >
-                      <Clock className="mr-2 h-4 w-4 text-black" />
-                      {formik.values.timings || "Select time"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="max-w-56 p-0 bg-white">
-                    <div className="h-64 overflow-y-auto p-2">
-                      {timeOptions.map((time) => (
-                        <Button
-                          key={time}
-                          variant="ghost"
-                          className="w-full justify-start text-black bg-white"
-                          onClick={() => {
-                            formik.setFieldValue("timings", time);
-                            formik.setFieldTouched("timings", true);
-                          }}
-                        >
-                          {time}
-                        </Button>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                {formik.touched.timings && formik.errors.timings && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.timings}
-                  </p>
-                )}
-              </div>
+              <TimeSelector formik={formik} timeOptions={timeOptions} />
 
               <div className="space-y-2">
                 <Label htmlFor="entryFees">Entry Fees* (₹)</Label>
                 <Input
                   type="number"
                   id="entryFees"
+                  tabIndex={9}
                   {...formik.getFieldProps("entryFees")}
                   className={
                     formik.touched.entryFees && formik.errors.entryFees
@@ -476,6 +447,7 @@ const AddEvent = () => {
                 <Label htmlFor="city">City*</Label>
                 <Input
                   id="city"
+                  tabIndex={10}
                   {...formik.getFieldProps("city")}
                   className={
                     formik.touched.city && formik.errors.city
@@ -496,6 +468,7 @@ const AddEvent = () => {
                   }
                 >
                   <SelectTrigger
+                    tabIndex={11}
                     className={
                       formik.touched.state && formik.errors.state
                         ? "border-red-500 text-black"
@@ -529,6 +502,7 @@ const AddEvent = () => {
                 onBlur={formik.handleBlur}
                 error={formik.errors.venue}
                 touched={formik.touched.venue}
+                tabIndex={12}
               />
 
               <div className="space-y-2">
@@ -536,6 +510,7 @@ const AddEvent = () => {
                 <Input
                   id="website"
                   type="url"
+                  tabIndex={13}
                   {...formik.getFieldProps("website")}
                   className={
                     formik.touched.website && formik.errors.website
@@ -555,7 +530,7 @@ const AddEvent = () => {
                 <Input
                   id="logo"
                   type="file"
-                  // onChange={handleLogoChange}
+                  tabIndex={14}
                   accept="image/*"
                   className="cursor-pointer"
                 />
@@ -570,7 +545,11 @@ const AddEvent = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="frequency">Frequency</Label>
-                <Input id="frequency" {...formik.getFieldProps("frequency")} />
+                <Input
+                  id="frequency"
+                  tabIndex={15}
+                  {...formik.getFieldProps("frequency")}
+                />
               </div>
 
               <div className="space-y-2">
@@ -579,6 +558,7 @@ const AddEvent = () => {
                 </Label>
                 <Input
                   id="exhibitionOrganizer"
+                  tabIndex={16}
                   {...formik.getFieldProps("exhibitionOrganizer")}
                 />
               </div>
@@ -591,6 +571,7 @@ const AddEvent = () => {
                   }
                 >
                   <SelectTrigger
+                    tabIndex={17}
                     className={
                       formik.touched.segment && formik.errors.segment
                         ? "border-red-500 text-black"
@@ -625,6 +606,7 @@ const AddEvent = () => {
                   }
                 >
                   <SelectTrigger
+                    tabIndex={18}
                     className={
                       formik.touched.segment && formik.errors.segment
                         ? "border-red-500 text-black"
@@ -659,6 +641,7 @@ const AddEvent = () => {
                   }
                 >
                   <SelectTrigger
+                    tabIndex={19}
                     className={
                       formik.touched.segment && formik.errors.segment
                         ? "border-red-500 text-black"
@@ -691,6 +674,7 @@ const AddEvent = () => {
               <Label htmlFor="exhibitorProfile">Exhibitor Profile</Label>
               <Textarea
                 id="exhibitorProfile"
+                tabIndex={20}
                 {...formik.getFieldProps("exhibitorProfile")}
                 className="text-black"
               />
@@ -700,12 +684,13 @@ const AddEvent = () => {
               <Label htmlFor="visitorProfile">Visitor Profile</Label>
               <Textarea
                 id="visitorProfile"
+                tabIndex={21}
                 {...formik.getFieldProps("visitorProfile")}
                 className="text-black"
               />
             </div>
 
-            <Button type="submit" className="w-full bg-primary">
+            <Button type="submit" className="w-full bg-primary" tabIndex={22}>
               Submit
             </Button>
           </form>

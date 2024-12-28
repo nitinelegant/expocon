@@ -20,17 +20,15 @@ import {
   statesAndUnionTerritories,
   years,
 } from "@/constants/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Clock } from "lucide-react";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
+import { useEffect, useRef } from "react";
+import TimeSelector from "@/components/TimeSelector";
 
 const AddEvent = () => {
+  const firstInputRef = useRef<HTMLButtonElement>(null);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   // const [logoPreview, setLogoPreview] = useState(null);
@@ -158,6 +156,12 @@ const AddEvent = () => {
     },
   });
 
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
+
   // const handleLogoChange = (event) => {
   //   const file = event.currentTarget.files?.[0];
   //   formik.setFieldValue("logo", file);
@@ -205,6 +209,8 @@ const AddEvent = () => {
                 >
                   <SelectTrigger
                     tabIndex={1}
+                    ref={firstInputRef}
+                    id="eventType"
                     className={
                       formik.touched.eventType && formik.errors.eventType
                         ? "border-red-500 text-black"
@@ -416,50 +422,7 @@ const AddEvent = () => {
                   </p>
                 )}
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="time">Timings</Label>
-                <Popover>
-                  <PopoverTrigger asChild className="bg-white text-black">
-                    <Button
-                      variant="outline"
-                      tabIndex={8}
-                      className={cn(
-                        "w-full justify-start text-left font-normal text-black",
-                        !formik.values.timings && "text-black",
-                        formik.touched.timings &&
-                          formik.errors.timings &&
-                          "border-red-500"
-                      )}
-                    >
-                      <Clock className="mr-2 h-4 w-4 text-black" />
-                      {formik.values.timings || "Select time"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="max-w-56 p-0 bg-white">
-                    <div className="h-64 overflow-y-auto p-2">
-                      {timeOptions.map((time) => (
-                        <Button
-                          key={time}
-                          variant="ghost"
-                          className="w-full justify-start text-black bg-white"
-                          onClick={() => {
-                            formik.setFieldValue("timings", time);
-                            formik.setFieldTouched("timings", true);
-                          }}
-                        >
-                          {time}
-                        </Button>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                {formik.touched.timings && formik.errors.timings && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.timings}
-                  </p>
-                )}
-              </div>
+              <TimeSelector formik={formik} timeOptions={timeOptions} />
 
               <div className="space-y-2">
                 <Label htmlFor="entryFees">Entry Fees* (₹)</Label>

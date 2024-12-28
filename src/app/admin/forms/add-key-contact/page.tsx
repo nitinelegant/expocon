@@ -15,8 +15,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { useEffect, useRef } from "react";
 
 const KeyContactForm = () => {
+  const firstInputRef = useRef<HTMLButtonElement>(null);
   const formik = useFormik({
     initialValues: {
       fullName: "",
@@ -43,6 +45,11 @@ const KeyContactForm = () => {
       console.log(values);
     },
   });
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -62,6 +69,7 @@ const KeyContactForm = () => {
                 </Label>
                 <Input
                   id="fullName"
+                  ref={firstInputRef}
                   tabIndex={1}
                   {...formik.getFieldProps("fullName")}
                   className={

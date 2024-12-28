@@ -15,8 +15,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { useEffect, useRef } from "react";
 
 const KeyContactForm = () => {
+  const firstInputRef = useRef<HTMLButtonElement>(null);
   const formik = useFormik({
     initialValues: {
       fullName: "",
@@ -43,6 +45,11 @@ const KeyContactForm = () => {
       console.log(values);
     },
   });
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -62,6 +69,8 @@ const KeyContactForm = () => {
                 </Label>
                 <Input
                   id="fullName"
+                  ref={firstInputRef}
+                  tabIndex={1}
                   {...formik.getFieldProps("fullName")}
                   className={
                     formik.touched.fullName && formik.errors.fullName
@@ -81,6 +90,7 @@ const KeyContactForm = () => {
                 </Label>
                 <Input
                   id="mobile"
+                  tabIndex={2}
                   {...formik.getFieldProps("mobile")}
                   className={
                     formik.touched.mobile && formik.errors.mobile
@@ -100,6 +110,7 @@ const KeyContactForm = () => {
                 </Label>
                 <Input
                   id="email"
+                  tabIndex={3}
                   {...formik.getFieldProps("email")}
                   className={
                     formik.touched.email && formik.errors.email
@@ -123,6 +134,7 @@ const KeyContactForm = () => {
                   defaultValue={formik.values.state}
                 >
                   <SelectTrigger
+                    tabIndex={4}
                     className={
                       formik.touched.state && formik.errors.state
                         ? "border-red-500 text-black"
@@ -132,11 +144,12 @@ const KeyContactForm = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent>
-                    {statesAndUnionTerritories.map((state) => (
+                    {statesAndUnionTerritories.map((state, index) => (
                       <SelectItem
                         key={state}
                         value={state}
                         className="hover:cursor-pointer"
+                        tabIndex={index + 1}
                       >
                         {state}
                       </SelectItem>
@@ -155,6 +168,7 @@ const KeyContactForm = () => {
                 </Label>
                 <Input
                   id="company"
+                  tabIndex={5}
                   {...formik.getFieldProps("company")}
                   className={
                     formik.touched.company && formik.errors.company
@@ -175,6 +189,7 @@ const KeyContactForm = () => {
                 </Label>
                 <Input
                   id="venue"
+                  tabIndex={6}
                   {...formik.getFieldProps("venue")}
                   className={
                     formik.touched.venue && formik.errors.venue
@@ -194,6 +209,7 @@ const KeyContactForm = () => {
                 </Label>
                 <Input
                   id="association"
+                  tabIndex={7}
                   {...formik.getFieldProps("association")}
                   className={
                     formik.touched.association && formik.errors.association
@@ -209,7 +225,7 @@ const KeyContactForm = () => {
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-primary">
+            <Button type="submit" className="w-full bg-primary" tabIndex={8}>
               Submit
             </Button>
           </form>

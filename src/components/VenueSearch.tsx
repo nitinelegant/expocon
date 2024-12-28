@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, KeyboardEvent } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Command,
@@ -36,10 +36,10 @@ interface Venue {
 interface VenueSearchProps {
   value: string;
   onChange: (value: string) => void;
-  onBlur: (e: React.FocusEvent<HTMLButtonElement | HTMLInputElement>) => void; // Updated type
-
+  onBlur: (e: React.FocusEvent<HTMLButtonElement | HTMLInputElement>) => void;
   error?: string;
   touched?: boolean;
+  tabIndex?: number;
 }
 
 interface VenuesResponse {
@@ -65,11 +65,15 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
   onBlur,
   error,
   touched,
+  tabIndex = 0,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchError, setSearchError] = useState<string>("");
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+  const commandInputRef = useRef<HTMLInputElement>(null);
+  const commandItemsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const debouncedSearch = useCallback(
     debounce(async (searchTerm: string) => {
@@ -102,14 +106,55 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
 
   const handleSelect = useCallback(
     (selectedVenue: Venue) => {
-      // Set the value first
       onChange(selectedVenue.venue_name);
-
-      // Close the popover
       setOpen(false);
+      setHighlightedIndex(-1);
     },
     [onChange]
   );
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    switch (e.key) {
+      case "Enter":
+        e.preventDefault();
+        if (highlightedIndex >= 0 && highlightedIndex < venues.length) {
+          handleSelect(venues[highlightedIndex]);
+        }
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev < venues.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+        break;
+      case "Escape":
+        setOpen(false);
+        setHighlightedIndex(-1);
+        break;
+      case "Tab":
+        if (open) {
+          e.preventDefault();
+          setHighlightedIndex((prev) =>
+            prev < venues.length - 1 ? prev + 1 : 0
+          );
+        }
+        break;
+    }
+  };
+
+  const handleTriggerKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setOpen(true);
+      setTimeout(() => {
+        commandInputRef.current?.focus();
+      }, 0);
+    }
+  };
 
   return (
     <div className="space-y-2">
@@ -127,6 +172,8 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
               touched && error && "border-red-500"
             )}
             onBlur={onBlur}
+            onKeyDown={handleTriggerKeyDown}
+            tabIndex={tabIndex}
             type="button"
           >
             {value || "Select venue..."}
@@ -134,8 +181,9 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="min-w-56 p-0 bg-white">
-          <Command>
+          <Command onKeyDown={handleKeyDown}>
             <CommandInput
+              ref={commandInputRef}
               placeholder="Search venues..."
               onValueChange={debouncedSearch}
               className="text-black"
@@ -150,12 +198,16 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
               <CommandEmpty>No venues found.</CommandEmpty>
             )}
             <CommandGroup className="bg-white max-h-64 overflow-auto">
-              {venues.map((venue) => (
+              {venues.map((venue, index) => (
                 <CommandItem
                   key={venue._id}
                   value={venue.venue_name}
                   onSelect={() => handleSelect(venue)}
-                  className="hover:cursor-pointer text-black"
+                  ref={(el) => (commandItemsRef.current[index] = el)}
+                  className={cn(
+                    "hover:cursor-pointer text-black",
+                    highlightedIndex === index && "bg-gray-100"
+                  )}
                 >
                   <Check
                     className={cn(

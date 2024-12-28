@@ -63,11 +63,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="fixed inset-0 flex bg-gray-50">
       <Sidebar menuSections={menuSections} />
       <div className="flex-1 flex flex-col">
-        <Header title="Dashboard" user="Staff" />
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <Header title="Admin Dashboard" user="Admin" />
+        <div className="relative flex-1">
+          <main className="absolute inset-0 overflow-y-auto p-4">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );

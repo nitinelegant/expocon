@@ -16,8 +16,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { associationTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { useEffect, useRef } from "react";
 
 const AssociationForm = () => {
+  const firstInputRef = useRef<HTMLButtonElement>(null);
   const formik = useFormik({
     initialValues: {
       website: "",
@@ -41,6 +43,11 @@ const AssociationForm = () => {
       console.log(values);
     },
   });
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -60,6 +67,7 @@ const AssociationForm = () => {
                   Website*
                 </Label>
                 <Input
+                  ref={firstInputRef}
                   id="website"
                   tabIndex={1}
                   {...formik.getFieldProps("website")}

@@ -17,8 +17,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { companyTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { useEffect, useRef } from "react";
 
 const CompanyRegistrationForm = () => {
+  const firstInputRef = useRef<HTMLButtonElement>(null);
   // const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
@@ -61,6 +63,11 @@ const CompanyRegistrationForm = () => {
       console.log(values);
     },
   });
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
@@ -92,6 +99,7 @@ const CompanyRegistrationForm = () => {
                 </Label>
                 <Input
                   id="companyName"
+                  ref={firstInputRef}
                   tabIndex={1}
                   {...formik.getFieldProps("companyName")}
                   className={

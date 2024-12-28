@@ -158,6 +158,8 @@ export default function Company() {
         data={transactions}
         title="Companies"
         itemsPerPage={5}
+        viewAllLink="/staff/forms/add-company"
+        addButtonTitle="Add Company"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
