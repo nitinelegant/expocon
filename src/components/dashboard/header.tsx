@@ -2,9 +2,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface HeaderProps {
   title: string;
+  user?: string;
 }
 
-export function Header({ title }: HeaderProps) {
+export function Header({ title, user }: HeaderProps) {
   return (
     <header className="border-b bg-white px-6 py-3">
       <div className="flex items-center justify-between">
@@ -32,7 +33,7 @@ export function Header({ title }: HeaderProps) {
               <AvatarFallback>GA</AvatarFallback>
             </Avatar>
             <div className="text-sm">
-              <p className="font-medium">Admin</p>
+              <p className="font-medium">{user}</p>
               <p className="text-gray-500">ecpocon@gmail.com</p>
             </div>
           </div>

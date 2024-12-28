@@ -6,6 +6,12 @@ import { MenuSection } from "@/types/sidebar";
 
 const menuSections: MenuSection[] = [
   {
+    name: "Dashboard",
+    icon: LayoutDashboard,
+    mainLink: "/staff",
+    links: [],
+  },
+  {
     name: "Records",
     icon: LayoutDashboard,
     links: [
@@ -60,7 +66,7 @@ export default function RootLayout({
     <div className="flex h-screen bg-gray-50">
       <Sidebar menuSections={menuSections} />
       <div className="flex-1 flex flex-col">
-        <Header title="Dashboard" />
+        <Header title="Dashboard" user="Staff" />
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>

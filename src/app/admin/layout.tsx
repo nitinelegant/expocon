@@ -105,7 +105,7 @@ export default function RootLayout({
     <div className="fixed inset-0 flex bg-gray-50">
       <Sidebar menuSections={menuSections} />
       <div className="flex-1 flex flex-col">
-        <Header title="Admin Dashboard" />
+        <Header title="Admin Dashboard" user="Admin" />
         <div className="relative flex-1">
           <main className="absolute inset-0 overflow-y-auto p-4">
             {children}
